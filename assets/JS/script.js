@@ -370,6 +370,138 @@ document.addEventListener('keydown', function(e) {
         moveSlide(-1); // Right arrow = previous (RTL)
     }
 });
+/* =======================PROJECTS انتظرونا قريباً==================== */
+// ========== TOAST NOTIFICATION SYSTEM ==========
+class Toast {
+    constructor() {
+      this.createContainer();
+    }
+  
+    // إنشاء  الإشعارات
+    createContainer() {
+      if (!document.getElementById('toast-container')) {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+    }
+  
+    // عرض إشعار
+    show(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toast-container');
+      
+      // إنشاء عنصر الإشعار
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      // تحديد الأيقونة بناءً على النوع
+      let icon = '';
+      switch(type) {
+        case 'success':
+          icon = '<i class="fas fa-check-circle"></i>';
+          break;
+        case 'error':
+          icon = '<i class="fas fa-exclamation-circle"></i>';
+          break;
+        case 'warning':
+          icon = '<i class="fas fa-exclamation-triangle"></i>';
+          break;
+        case 'info':
+        default:
+          icon = '<i class="fas fa-info-circle"></i>';
+          break;
+      }
+      
+      // محتوى الإشعار
+      toast.innerHTML = `
+        <div class="toast-content">
+          <div class="toast-icon">${icon}</div>
+          <div class="toast-message">${message}</div>
+          <button class="toast-close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="toast-progress"></div>
+      `;
+      
+      // إضافة الإشعار للحاوية
+      container.appendChild(toast);
+      
+      // تفعيل الحركة
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      // زر الإغلاق
+      const closeBtn = toast.querySelector('.toast-close');
+      closeBtn.addEventListener('click', () => {
+        this.remove(toast);
+      });
+      
+      // إزالة تلقائية بعد المدة المحددة
+      setTimeout(() => {
+        this.remove(toast);
+      }, duration);
+    }
+  
+    // إزالة الإشعار
+    remove(toast) {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+  
+    // اختصارات سريعة
+    success(message, duration = 3000) {
+      this.show(message, 'success', duration);
+    }
+  
+    error(message, duration = 3000) {
+      this.show(message, 'error', duration);
+    }
+  
+    warning(message, duration = 3000) {
+      this.show(message, 'warning', duration);
+    }
+  
+    info(message, duration = 3000) {
+      this.show(message, 'info', duration);
+    }
+  
+    // رسالة مشروع قريباً
+    comingSoon(projectName = 'هذا المشروع') {
+      this.show(` ${projectName} قريباً جداً!`, 'info', 3500);
+    }
+  }
+  
+  // ========== INITIALIZE TOAST ==========
+  let toast;
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      toast = new Toast();
+      window.toast = toast; 
+    });
+  } else {
+    toast = new Toast();
+    window.toast = toast;
+  }
+  
+  // ========== AUTO-ATTACH TO "Coming Soon" BUTTONS ==========
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.project-btn').forEach(btn => {
+      const text = btn.textContent.trim();
+      if (text.includes('انتظرونا') || text.includes('قريباً')) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.toast.comingSoon('هذا المشروع');
+        });
+      }
+    });
+  });
+  
 
 /* =======================Start Clints  ==================== */
 const clientsObserver = new IntersectionObserver(function(entries) {
